@@ -324,6 +324,14 @@
                 line-height: 16px;
             }
 
+            td,
+            tr:not(:first-child) td {
+                line-height: 18px;
+                /* Căn chỉnh nội dung theo chiều cao */
+                vertical-align: middle;
+                /* Đảm bảo nội dung ở giữa */
+            }
+
             .filter-container {
                 display: flex;
                 flex-direction: column;
@@ -486,6 +494,14 @@
                 line-height: 14px;
             }
 
+            td,
+            tr:not(:first-child) td {
+                line-height: 12px;
+                /* Căn chỉnh nội dung theo chiều cao */
+                vertical-align: middle;
+                /* Đảm bảo nội dung ở giữa */
+            }
+
             .filter-container {
                 display: flex;
                 flex-direction: column;
@@ -520,7 +536,7 @@
 
             .search-container {
                 position: fixed;
-                top: 70px;
+                top: 60px;
                 left: 5px;
                 display: flex;
                 align-items: center;
@@ -574,7 +590,7 @@
             }
 
             .title-container {
-                font-size: 12px;
+                font-size: 10px;
                 font-weight: bold;
                 color: #051F96;
                 display: flex;
@@ -625,7 +641,7 @@
                 /* Xếp các dòng theo chiều dọc */
                 align-items: flex-end;
                 /* Căn chỉnh các phần tử về phía phải */
-                gap: 10px;
+                gap: 5px;
                 font-size: 8px;
                 font-weight: bold;
                 color: red;
