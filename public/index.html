@@ -9,12 +9,12 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 20px;
-            background-color: #f9f9f9;
+            background-color: #ffffff;
             color: #333;
         }
 
         h1 {
-            font-size: 38px;
+            font-size: 50px;
             font-weight: bold;
             color: #051F96;
         }
@@ -168,6 +168,7 @@
             align-items: left;
             justify-content: left;
             gap: 10px;
+            font-size: 20px;
             font-weight: bold;
             color: red;
         }
@@ -184,6 +185,7 @@
             align-items: flex-end;
             /* Căn chỉnh các phần tử về phía phải */
             gap: 10px;
+            font-size: 20px;
             font-weight: bold;
             color: red;
             z-index: 1000;
@@ -283,14 +285,14 @@
         /* Định nghĩa container cho ô tìm kiếm */
         .search-container {
             position: fixed;
-            top: 95px;
+            top: 150px;
             left: 20px;
             display: flex;
             align-items: center;
             transition: all 0.3s ease-in-out;
             background-color: transparent;
             padding: 5px;
-            width: 75px;
+            width: 500px;
             /* Kích thước ban đầu */
         }
 
@@ -301,9 +303,9 @@
             padding: 5px 10px;
             border: none;
             outline: none;
-            font-size: 16px;
+            font-size: 20px;
             border-radius: 25px;
-            transition: width 0.3s ease-in-out;
+            transition: width 0.1s ease-in-out;
             opacity: 0;
         }
 
@@ -350,6 +352,82 @@
             height: auto;
             margin-right: 15px;
             /* Khoảng cách giữa hình ảnh và văn bản */
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 30px;
+            }
+
+            table {
+                max-height: calc(100vh - 150px);
+            }
+
+            .filter-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .filter-container select,
+            .filter-container button {
+                width: 100%;
+                font-size: 14px;
+            }
+
+            .time-container {
+                font-size: 16px;
+                top: 15px;
+            }
+
+            .search-container {
+                top: 100px;
+                width: 100%;
+                left: 0;
+                justify-content: center;
+            }
+
+            .title-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .title-container img {
+                width: 100px;
+            }
+
+            .filter-container div {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+
+        /* Media Queries cho màn hình cực nhỏ */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+                text-align: center;
+            }
+
+            .filter-container {
+                gap: 5px;
+            }
+
+            .filter-container select {
+                font-size: 12px;
+            }
+
+            .search-container {
+                top: 80px;
+                left: 10px;
+            }
+
+            .time-container {
+                font-size: 14px;
+                top: 10px;
+            }
         }
     </style>
     <!-- Thêm Font Awesome CDN -->

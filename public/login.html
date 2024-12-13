@@ -22,6 +22,20 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.068);
+            /* Màu đen với độ mờ 50% */
+            z-index: -1;
+            /* Đảm bảo lớp phủ mờ ở dưới các nội dung khác */
         }
 
         /* Container đăng nhập */
@@ -33,11 +47,17 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
         }
 
         h1 {
-            color: #333;
+            color: #ff0000;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #030303;
             font-size: 24px;
             margin-bottom: 20px;
         }
@@ -70,7 +90,8 @@
 
 <body>
     <div class="login-container">
-        <h1>Đăng nhập bằng tài khoản Google</h1>
+        <h1>TIẾN ĐỘ SẢN XUẤT REALTIME</h1>
+        <h2>Đăng nhập bằng tài khoản Google</h2>
         <a href="/auth/google">
             <button class="login-btn">
                 <i class="fab fa-google google-icon"></i> Đăng nhập
