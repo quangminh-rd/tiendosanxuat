@@ -290,7 +290,7 @@
             transition: all 0.3s ease-in-out;
             background-color: transparent;
             padding: 5px;
-            width: 50px;
+            width: 75px;
             /* Kích thước ban đầu */
         }
 
@@ -317,7 +317,7 @@
 
         /* Biểu tượng kính lúp */
         .search-icon {
-            font-size: 20px;
+            font-size: 30px;
             color: #051F96;
             cursor: pointer;
             transition: transform 0.3s ease-in-out;
@@ -335,6 +335,22 @@
         .search-container.open .search-icon {
             transform: scale(0);
         }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 100px;
+        }
+
+        .title-container img {
+            width: 120px;
+            /* Đặt chiều rộng của hình ảnh */
+            height: auto;
+            margin-right: 15px;
+            /* Khoảng cách giữa hình ảnh và văn bản */
+        }
     </style>
     <!-- Thêm Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -342,9 +358,11 @@
 </head>
 
 <body>
-    <h1>
-        <center>TIẾN ĐỘ SẢN XUẤT REALTIME</center>
-    </h1>
+    <div class="title-container">
+        <img src="https://i.imgur.com/BrJoeOv.png" alt="Image">
+        <h1>TIẾN ĐỘ SẢN XUẤT REALTIME</h1>
+        <img src="https://i.imgur.com/BrJoeOv.png" alt="Image">
+    </div>
     <div class="time-container">
         <!-- Biểu tượng đồng hồ bên trái -->
         <i class="fas fa-clock clock-icon"></i>
