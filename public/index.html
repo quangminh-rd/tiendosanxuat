@@ -357,10 +357,13 @@
         @media (max-width: 768px) {
             h1 {
                 font-size: 30px;
+                text-align: center;
+                /* Căn giữa tiêu đề */
             }
 
             table {
                 max-height: calc(100vh - 150px);
+                margin-bottom: 0;
             }
 
             .filter-container {
@@ -374,6 +377,13 @@
             .filter-container button {
                 width: 100%;
                 font-size: 14px;
+                margin-bottom: 10px;
+                /* Giảm khoảng cách giữa các phần tử */
+            }
+
+            .filter-container button {
+                padding: 8px 12px;
+                font-size: 14px;
             }
 
             .time-container {
@@ -382,10 +392,14 @@
             }
 
             .search-container {
-                top: 100px;
-                width: 100%;
-                left: 0;
+                top: 80px;
+                left: 10px;
+                width: 90%;
                 justify-content: center;
+            }
+
+            .search-icon {
+                font-size: 25px;
             }
 
             .title-container {
@@ -402,6 +416,10 @@
                 width: 100%;
                 min-width: unset;
             }
+
+            .clock-icon {
+                font-size: 18px;
+            }
         }
 
         /* Media Queries cho màn hình cực nhỏ */
@@ -409,6 +427,7 @@
             h1 {
                 font-size: 24px;
                 text-align: center;
+                margin-top: 10px;
             }
 
             .filter-container {
@@ -417,16 +436,47 @@
 
             .filter-container select {
                 font-size: 12px;
+                margin-bottom: 8px;
             }
 
             .search-container {
                 top: 80px;
                 left: 10px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-icon {
+                font-size: 24px;
             }
 
             .time-container {
                 font-size: 14px;
                 top: 10px;
+            }
+
+            .title-container img {
+                width: 80px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            .filter-container select,
+            .filter-container button {
+                width: 100%;
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .search-container.open #searchInput {
+                width: 90%;
+                padding: 10px 15px;
+            }
+
+            .filter-container {
+                margin-top: 10px;
             }
         }
     </style>
