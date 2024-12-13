@@ -15,8 +15,30 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const API_KEY = process.env.API_KEY;
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 const RANGE = process.env.RANGE;
+const SPREADSHEET_ID_USER = process.env.SPREADSHEET_ID_USER;
+const RANGE_USER = process.env.RANGE_USER;
 const SESSION_SECRET = process.env.SESSION_SECRET;
-const ALLOWED_EMAILS = ["ducanh-rd@quangminhpro.com", "ducanh-rd@quangminhpro.vn"];
+let ALLOWED_EMAILS = [];
+
+// Hàm để lấy danh sách email được cấp quyền từ Google Sheets
+async function fetchAllowedEmails() {
+    try {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID_USER}/values/${RANGE_USER}?key=${API_KEY}`;
+        const response = await axios.get(url);
+
+        const rawData = response.data.values || [];
+        if (rawData.length > 1) { // Bỏ qua tiêu đề nếu có
+            ALLOWED_EMAILS = rawData.slice(1).map(row => row[0]); // Lấy danh sách email từ cột U
+        } else {
+            console.warn('Không có email nào trong phạm vi được chỉ định.');
+        }
+    } catch (error) {
+        console.error('Error fetching allowed emails:', error.response ? error.response.data : error.message);
+    }
+}
+
+// Gọi hàm để cập nhật danh sách email khi khởi động server
+fetchAllowedEmails();
 
 // Cấu hình session
 app.use(
@@ -32,13 +54,13 @@ app.use(passport.session());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Passport configuration
+// Passport configuration: https://tiendosanxuat.vercel.app
 passport.use(
     new GoogleStrategy(
         {
             clientID: GOOGLE_CLIENT_ID,
             clientSecret: GOOGLE_CLIENT_SECRET,
-            callbackURL: 'https://tiendosanxuat.vercel.app/auth/google/callback',
+            callbackURL: '/auth/google/callback',
         },
         (accessToken, refreshToken, profile, done) => {
             return done(null, profile);
