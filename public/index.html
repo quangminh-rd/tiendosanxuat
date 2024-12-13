@@ -13,18 +13,12 @@
             color: #333;
         }
 
-        h1 {
-            font-size: 50px;
-            font-weight: bold;
-            color: #051F96;
-        }
-
         table {
             width: 100%;
             max-width: 100%;
             /* Đảm bảo bảng không vượt quá chiều rộng màn hình */
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             display: block;
@@ -128,39 +122,6 @@
             display: none;
         }
 
-        .filter-container {
-            margin-bottom: 30px;
-        }
-
-        .filter-container label {
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: block;
-            color: #051F96;
-        }
-
-        .filter-container select {
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            background-color: #fff;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .filter-container select:hover {
-            border-color: #4CAF50;
-        }
-
-        .filter-container select:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-
         .time-container {
             position: fixed;
             top: 30px;
@@ -219,11 +180,9 @@
         .filter-container div {
             color: #051F96;
             position: absolute;
+            padding: 10px 15px;
             display: none;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            padding: 10px;
-            min-width: 200px;
+            max-width: 300px;
             z-index: 100;
         }
 
@@ -231,7 +190,6 @@
             width: 100%;
             padding: 8px;
             border: 1px solid;
-            border-radius: 8px;
             font-size: 16px;
             outline: none;
         }
@@ -244,8 +202,8 @@
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
-            border-radius: 8px;
             font-size: 16px;
+            color: black;
             margin-bottom: 2px;
             outline: none;
             box-sizing: border-box;
@@ -285,7 +243,7 @@
         /* Định nghĩa container cho ô tìm kiếm */
         .search-container {
             position: fixed;
-            top: 150px;
+            top: 110px;
             left: 20px;
             display: flex;
             align-items: center;
@@ -339,6 +297,9 @@
         }
 
         .title-container {
+            font-size: 50px;
+            font-weight: bold;
+            color: #051F96;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -355,22 +316,19 @@
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 30px;
-                text-align: center;
-                /* Căn giữa tiêu đề */
-            }
 
             table {
                 max-height: calc(100vh - 150px);
                 margin-bottom: 0;
+                font-size: 12px;
+                line-height: 16px;
             }
 
             .filter-container {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
+                gap: 3px;
             }
 
             .filter-container select,
@@ -395,21 +353,82 @@
                 top: 80px;
                 left: 10px;
                 width: 90%;
-                justify-content: center;
+                justify-content: left;
             }
 
+            .search-container {
+                position: fixed;
+                top: 90px;
+                left: 5px;
+                display: flex;
+                align-items: center;
+                transition: all 0.3s ease-in-out;
+                background-color: transparent;
+                padding: 5px;
+                width: 150px;
+                /* Kích thước ban đầu */
+            }
+
+            /* Định nghĩa cho input khi tìm kiếm */
+            #searchInput {
+                left: 5px;
+                width: 0;
+                padding: 5px 10px;
+                border: none;
+                outline: none;
+                font-size: 16px;
+                border-radius: 25px;
+                transition: width 0.1s ease-in-out;
+                opacity: 0;
+            }
+
+            /* Khi input được mở rộng */
+            .search-container.open #searchInput {
+                width: 150px;
+                /* Kích thước khi mở rộng */
+                border: 1px solid #051F96;
+                opacity: 1;
+            }
+
+            /* Biểu tượng kính lúp */
             .search-icon {
-                font-size: 25px;
+                font-size: 20px;
+                color: #051F96;
+                cursor: pointer;
+                transition: transform 0.3s ease-in-out;
+                background-color: transparent;
+                /* Nền trong suốt */
+                border: none;
+                /* Không có viền */
+                padding: 5px;
+                /* Thêm khoảng cách xung quanh biểu tượng */
+                border-radius: 50%;
+                /* Đảm bảo biểu tượng có dạng tròn */
+            }
+
+            /* Khi input mở rộng, ẩn biểu tượng kính lúp */
+            .search-container.open .search-icon {
+                transform: scale(0);
             }
 
             .title-container {
-                flex-direction: column;
+                font-size: 20px;
+                font-weight: bold;
+                color: #051F96;
+                display: flex;
                 align-items: center;
-                gap: 20px;
+                justify-content: center;
+                margin-bottom: 20px;
+                flex-direction: column;
+                gap: 10px;
             }
 
             .title-container img {
-                width: 100px;
+                width: 50px;
+                /* Đặt chiều rộng của hình ảnh */
+                height: auto;
+                margin-right: 15px;
+                /* Khoảng cách giữa hình ảnh và văn bản */
             }
 
             .filter-container div {
@@ -417,66 +436,44 @@
                 min-width: unset;
             }
 
-            .clock-icon {
-                font-size: 18px;
-            }
-        }
-
-        /* Media Queries cho màn hình cực nhỏ */
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 24px;
-                text-align: center;
-                margin-top: 10px;
-            }
-
-            .filter-container {
-                gap: 5px;
-            }
-
-            .filter-container select {
-                font-size: 12px;
-                margin-bottom: 8px;
-            }
-
-            .search-container {
-                top: 80px;
-                left: 10px;
-                width: 100%;
-                justify-content: center;
-            }
-
-            .search-icon {
-                font-size: 24px;
-            }
-
             .time-container {
-                font-size: 14px;
+                position: fixed;
                 top: 10px;
+                display: flex;
+                align-items: left;
+                justify-content: left;
+                gap: 10px;
+                font-size: 14px;
+                font-weight: bold;
+                color: red;
             }
 
-            .title-container img {
-                width: 80px;
-            }
-
-            table {
+            .clock-icon {
                 font-size: 14px;
             }
 
-            .filter-container select,
-            .filter-container button {
-                width: 100%;
-                padding: 10px;
+            .filter-results-container {
+                position: fixed;
+                top: 10px;
+                /* Khoảng cách từ mép trên màn hình */
+                right: 10px;
+                /* Cố định ở mép phải màn hình */
+                display: flex;
+                flex-direction: column;
+                /* Xếp các dòng theo chiều dọc */
+                align-items: flex-end;
+                /* Căn chỉnh các phần tử về phía phải */
+                gap: 10px;
                 font-size: 14px;
+                font-weight: bold;
+                color: red;
+                z-index: 1000;
+                /* Đảm bảo phần tử nằm trên các thành phần khác */
             }
 
-            .search-container.open #searchInput {
-                width: 90%;
-                padding: 10px 15px;
-            }
-
-            .filter-container {
-                margin-top: 10px;
+            .tiendo {
+                font-size: 12px;
+                animation: blink 3s infinite;
             }
         }
     </style>
@@ -488,7 +485,7 @@
 <body>
     <div class="title-container">
         <img src="https://i.imgur.com/BrJoeOv.png" alt="Image">
-        <h1>TIẾN ĐỘ SẢN XUẤT REALTIME</h1>
+        TIẾN ĐỘ SẢN XUẤT REALTIME
         <img src="https://i.imgur.com/BrJoeOv.png" alt="Image">
     </div>
     <div class="time-container">
