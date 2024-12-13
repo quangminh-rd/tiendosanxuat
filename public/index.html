@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Đơn Hàng</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 38px;
+            font-weight: bold;
+            color: #051F96;
+        }
+
+        table {
+            width: 100%;
+            max-width: 100%;
+            /* Đảm bảo bảng không vượt quá chiều rộng màn hình */
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: block;
+            max-height: calc(100vh - 200px);
+            /* Chiều cao tối đa của bảng, trừ khoảng cách trên/dưới */
+            overflow-y: auto;
+            /* Hiển thị thanh cuộn dọc khi cần */
+            overflow-x: auto;
+            /* Ẩn thanh cuộn ngang */
+        }
+
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            max-height: 24px;
+            overflow: hidden;
+            background-color: #051F96;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        tr:not(:first-child) {
+            height: 24px;
+        }
+
+        td {
+            padding: 0 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            height: 24px;
+            line-height: 24px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background-color: #fff;
+            color: #555;
+        }
+
+        td:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        /* Cập nhật chiều cao cố định cho ô trong bảng */
+        td,
+        tr:not(:first-child) td {
+            line-height: 24px;
+            /* Căn chỉnh nội dung theo chiều cao */
+            vertical-align: middle;
+            /* Đảm bảo nội dung ở giữa */
+        }
+
+        table td:nth-child(1),
+        table td:nth-child(2),
+        table td:nth-child(3),
+        table td:nth-child(4),
+        table td:nth-child(14),
+        table td:nth-child(15),
+        table td:nth-child(16),
+        table td:nth-child(17) {
+            color: #25b92a;
+            font-weight: bold;
+        }
+
+        table td:nth-child(5),
+        table td:nth-child(6),
+        table td:nth-child(7),
+        table td:nth-child(8),
+        table td:nth-child(9),
+        table td:nth-child(10),
+        table td:nth-child(11),
+        table td:nth-child(12),
+        table td:nth-child(13) {
+            color: #2b2626;
+            font-weight: bold;
+        }
+
+        table th:nth-child(6) {
+            text-wrap: nowrap;
+        }
+
+        table td:nth-child(3),
+        table td:nth-child(4),
+        table td:nth-child(5),
+        table td:nth-child(8),
+        table td:nth-child(9) {
+            text-wrap: nowrap;
+        }
+
+        table td:nth-child(18),
+        table th:nth-child(18),
+        table td:nth-child(19),
+        table th:nth-child(19),
+        table td:nth-child(20),
+        table th:nth-child(20) {
+            display: none;
+        }
+
+        .filter-container {
+            margin-bottom: 30px;
+        }
+
+        .filter-container label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+            color: #051F96;
+        }
+
+        .filter-container select {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .filter-container select:hover {
+            border-color: #4CAF50;
+        }
+
+        .filter-container select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .time-container {
+            position: fixed;
+            top: 30px;
+            display: flex;
+            align-items: left;
+            justify-content: left;
+            gap: 10px;
+            font-weight: bold;
+            color: red;
+        }
+
+        .filter-results-container {
+            position: fixed;
+            top: 10px;
+            /* Khoảng cách từ mép trên màn hình */
+            right: 10px;
+            /* Cố định ở mép phải màn hình */
+            display: flex;
+            flex-direction: column;
+            /* Xếp các dòng theo chiều dọc */
+            align-items: flex-end;
+            /* Căn chỉnh các phần tử về phía phải */
+            gap: 10px;
+            font-weight: bold;
+            color: red;
+            z-index: 1000;
+            /* Đảm bảo phần tử nằm trên các thành phần khác */
+        }
+
+        .filter-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 80px;
+            font-weight: bold;
+            color: #051F96;
+            margin-top: 15px;
+        }
+
+        .filter-container button {
+            color: #051F96;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .filter-container button:hover {
+            background-color: #eb9f81;
+        }
+
+        .filter-container div {
+            color: #051F96;
+            position: absolute;
+            display: none;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            min-width: 200px;
+            z-index: 100;
+        }
+
+        .filter-container select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .filter-container select:focus {
+            border-color: #28a745;
+        }
+
+        .filter-container input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 2px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .filter-container input[type="text"]:focus {
+            border-color: #28a745;
+            box-shadow: 0px 0px 5px rgba(40, 167, 69, 0.5);
+        }
+
+        .clock-icon {
+            font-size: 20px;
+            color: red;
+            animation: blink 1s infinite;
+        }
+
+        .tiendo {
+            font-size: 16px;
+            animation: blink 3s infinite;
+        }
+
+        /* Hiệu ứng nhấp nháy */
+        @keyframes blink {
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            0% {
+                opacity: 1;
+            }
+        }
+
+        /* Định nghĩa container cho ô tìm kiếm */
+        .search-container {
+            position: fixed;
+            top: 95px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease-in-out;
+            background-color: transparent;
+            padding: 5px;
+            width: 50px;
+            /* Kích thước ban đầu */
+        }
+
+        /* Định nghĩa cho input khi tìm kiếm */
+        #searchInput {
+            left: 10px;
+            width: 0;
+            padding: 5px 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            border-radius: 25px;
+            transition: width 0.3s ease-in-out;
+            opacity: 0;
+        }
+
+        /* Khi input được mở rộng */
+        .search-container.open #searchInput {
+            width: 500px;
+            /* Kích thước khi mở rộng */
+            border: 1px solid #051F96;
+            opacity: 1;
+        }
+
+        /* Biểu tượng kính lúp */
+        .search-icon {
+            font-size: 20px;
+            color: #051F96;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+            background-color: transparent;
+            /* Nền trong suốt */
+            border: none;
+            /* Không có viền */
+            padding: 5px;
+            /* Thêm khoảng cách xung quanh biểu tượng */
+            border-radius: 50%;
+            /* Đảm bảo biểu tượng có dạng tròn */
+        }
+
+        /* Khi input mở rộng, ẩn biểu tượng kính lúp */
+        .search-container.open .search-icon {
+            transform: scale(0);
+        }
+    </style>
+    <!-- Thêm Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+
+<body>
+    <h1>
+        <center>TIẾN ĐỘ SẢN XUẤT REALTIME</center>
+    </h1>
+    <div class="time-container">
+        <!-- Biểu tượng đồng hồ bên trái -->
+        <i class="fas fa-clock clock-icon"></i>
+        <!-- Thời gian -->
+        <div id="current-time"></div>
+        <!-- Biểu tượng đồng hồ bên phải -->
+        <i class="fas fa-clock clock-icon"></i>
+    </div>
+
+    <div class="filter-results-container">
+        <div id="filter-results-region">Xưởng sản xuất: Tất cả</div>
+        <div id="filter-results-generaltrade">Đơn vị phụ trách: Tất cả</div>
+        <div id="filter-results-status">Tiến độ: Tất cả</div>
+        <div id="status-count"></div>
+    </div>
+
+    <div class="filter-container">
+        <button onclick="toggleDropdown(event, 'region-filter-container')" id="region-button">
+            <i class="fas fa-city"></i><b> Xưởng sản xuất</b>
+        </button>
+        <div id="region-filter-container">
+            <input type="text" id="region-search" placeholder="Tìm kiếm..."
+                oninput="filterOptions('region-filter', this.value)" />
+            <select id="region-filter" size="4">
+                <option value="">Tất cả</option>
+                <option value="Hà Nội">Hà Nội</option>
+                <option value="Long An">Long An</option>
+            </select>
+        </div>
+        <button onclick="toggleDropdown(event, 'generaltrade-filter-container')" id="generaltrade-button">
+            <i class="fas fa-store-alt"></i><b> Đơn vị phụ trách</b>
+        </button>
+        <div id="generaltrade-filter-container">
+            <input type="text" id="generaltrade-search" placeholder="Tìm kiếm..."
+                oninput="filterOptions('generaltrade-filter', this.value)" />
+            <select id="generaltrade-filter" size="4">
+                <option value="">Tất cả</option>
+            </select>
+        </div>
+        <button onclick="toggleDropdown(event, 'status-filter-container')" id="status-button">
+            <i class="fab fa-steam-square"></i><b> Tiến độ</b>
+        </button>
+        <div id="status-filter-container">
+            <input type="text" id="status-search" placeholder="Tìm kiếm..."
+                oninput="filterOptions('status-filter', this.value)" />
+            <select id="status-filter" size="10">
+                <option value="">Tất cả</option>
+                <option value="1. Không được duyệt sản xuất">Không được duyệt sản xuất</option>
+                <option value="2. Chờ duyệt sản xuất">Chờ duyệt sản xuất</option>
+                <option value="3. Chờ sản xuất">Chờ sản xuất</option>
+                <option value="4. Đang sản xuất">Đang sản xuất</option>
+                <option value="5. Tạm dừng sản xuất">Tạm dừng sản xuất</option>
+                <option value="6. Đã nhập kho thành phẩm">Đã nhập kho thành phẩm</option>
+                <option value="7. Đã xuất kho thành phẩm">Đã xuất kho thành phẩm</option>
+                <option value="8. Đã nhận hàng">Đã nhận hàng</option>
+            </select>
+        </div>
+    </div>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm..." />
+        <span class="search-icon" id="search-icon">
+            <i class="fas fa-search"></i> <!-- Biểu tượng kính lúp -->
+        </span>
+    </div>
+
+    <div class="table" id="data-container">
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+</body>
+<script>
+
+    // Thêm sự kiện click vào biểu tượng kính lúp
+    const searchContainer = document.querySelector('.search-container');
+    const searchInput = document.getElementById('searchInput');
+    const searchIcon = document.getElementById('search-icon');
+
+    // Lắng nghe sự kiện click vào biểu tượng kính lúp
+    searchIcon.addEventListener('click', function () {
+        // Mở rộng ô tìm kiếm
+        searchContainer.classList.toggle('open');
+        searchInput.focus(); // Đưa con trỏ vào ô tìm kiếm khi mở rộng
+    });
+
+    // Lắng nghe sự kiện khi người dùng nhập vào ô tìm kiếm
+    searchInput.addEventListener('blur', function () {
+        if (searchInput.value === '') {
+            // Nếu không có giá trị tìm kiếm thì đóng lại
+            searchContainer.classList.remove('open');
+        }
+    });
+
+    function filterOptions(selectId, query) {
+        const select = document.getElementById(selectId);
+        const options = select.querySelectorAll('option');
+
+        const lowerQuery = query.toLowerCase();
+
+        options.forEach(option => {
+            const text = option.textContent.toLowerCase();
+            if (text.includes(lowerQuery) || option.value === "") {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    }
+
+    document.addEventListener('click', function (event) {
+        const dropdownContainers = document.querySelectorAll('.filter-container > div');
+        let clickedInsideDropdown = false;
+
+        dropdownContainers.forEach(container => {
+            if (container.contains(event.target)) {
+                clickedInsideDropdown = true;
+            }
+        });
+
+        if (!clickedInsideDropdown) {
+            dropdownContainers.forEach(container => {
+                container.style.display = 'none';
+            });
+        }
+    });
+
+    function toggleDropdown(event, containerId) {
+        event.stopPropagation(); // Prevent click event from propagating to document
+        const container = document.getElementById(containerId);
+        const button = event.target;
+        const isHidden = container.style.display === 'none';
+
+        // Hide all dropdowns
+        document.querySelectorAll('.filter-container > div').forEach(div => {
+            div.style.display = 'none';
+        });
+
+        if (isHidden) {
+            const buttonRect = button.getBoundingClientRect();
+            container.style.top = buttonRect.bottom + 'px';
+            container.style.left = buttonRect.left + 'px';
+            container.style.display = 'block';
+        }
+    }
+
+    // Hàm để cập nhật ngày giờ
+    function updateCurrentTime() {
+        const currentTimeElement = document.getElementById('current-time');
+        const now = new Date();
+        const formattedTime = now.toLocaleString('vi-VN', { hour12: false }); // Định dạng thời gian theo chuẩn Việt Nam
+
+        currentTimeElement.textContent = formattedTime; // Cập nhật ngày giờ vào phần tử
+    }
+
+    // Cập nhật thời gian ngay khi trang được tải
+    updateCurrentTime();
+
+    // Cập nhật thời gian mỗi giây
+    setInterval(updateCurrentTime, 1000);
+
+    let allData = [];
+    const selectedColumns = [67, 72, 1, 66, 4, 13, 17, 0, 60, 63, 74, 25, 84, 77, 81, 82, 83, 78, 76, 5];
+    const columnNames = {
+        67: 'Thời gian tiếp nhận',
+        72: 'Hạn giao hàng',
+        1: 'Mã báo giá',
+        66: 'Mã đơn hàng',
+        4: 'Nhân sự bán',
+        13: 'Tên người liên hệ',
+        17: 'Địa chỉ chi tiết',
+        0: 'Hình thức bán',
+        60: 'Loại đơn hàng',
+        63: 'Lưu ý',
+        74: 'Phiếu cắt',
+        25: 'Số bộ',
+        84: 'Chủng loại sản phẩm',
+        77: 'Ngày sản xuất',
+        81: 'Ngày nhập kho',
+        82: 'Ngày xuất kho',
+        83: 'Ngày nhận hàng',
+        78: 'Tiến độ',
+        76: 'Khu vực',
+        5: 'Đơn vị phụ trách'
+    };
+
+    // Hàm để lấy dữ liệu từ cột "Đơn vị phụ trách" và thêm vào bộ lọc
+    function updateGeneralTradeFilterOptions() {
+        const generalTradeIndex = selectedColumns.indexOf(5); // Tìm chỉ số của cột "Đơn vị phụ trách" (5 là key trong columnNames)
+        const generalTradeFilterElement = document.getElementById('generaltrade-filter');
+
+        // Lấy danh sách giá trị duy nhất từ cột "Đơn vị phụ trách"
+        const generalTradeValues = [...new Set(allData.map(row => row[generalTradeIndex]).filter(value => value))];
+
+        // Xóa tất cả các option hiện tại (trừ option "Tất cả")
+        generalTradeFilterElement.innerHTML = '<option value="">Tất cả</option>';
+
+        // Thêm các giá trị vào bộ lọc
+        generalTradeValues.forEach(value => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            generalTradeFilterElement.appendChild(option);
+        });
+    }
+
+    function updateStatusCount() {
+        const counts = {};
+
+        // Lấy giá trị của các bộ lọc
+        const selectedStatus = document.getElementById('status-filter').value;
+        const selectedRegion = document.getElementById('region-filter').value;
+        const selectedGeneralTrade = document.getElementById('generaltrade-filter').value;
+
+        // Lọc dữ liệu dựa trên các tiêu chí đã chọn
+        const filteredData = allData.filter(row => {
+            const progress = row[17];
+            const region = row[18];
+            const generalTrade = row[19];
+            const sets = row[11]; // Cột "Số bộ"
+
+            return (
+                sets !== '0' && // Loại bỏ các dòng có "Số bộ" bằng '0'
+                (!selectedStatus || progress === selectedStatus) &&
+                (!selectedRegion || region === selectedRegion) &&
+                (!selectedGeneralTrade || generalTrade === selectedGeneralTrade)
+            );
+        });
+
+        // Đếm số lần xuất hiện của từng tổ hợp trạng thái, khu vực và thương mại tổng quát
+        filteredData.forEach(row => {
+            const sets = row[11];
+            const progress = row[17];
+            const region = row[18];
+            const generalTrade = row[19];
+            const key = `${progress}-${region}-${generalTrade}`;
+
+            counts[key] = (counts[key] || 0) + 1;
+        });
+
+        // Cập nhật số lượng đơn theo bộ lọc đã chọn
+        const statusCountElement = document.getElementById('status-count');
+
+        if (selectedStatus && selectedRegion && selectedGeneralTrade) {
+            const selectedKey = `${selectedStatus}-${selectedRegion}-${selectedGeneralTrade}`;
+            statusCountElement.textContent = `Số đơn: ${counts[selectedKey] || 0}`;
+        } else if (selectedStatus && selectedRegion) {
+            const total = Object.keys(counts)
+                .filter(key => key.startsWith(`${selectedStatus}-${selectedRegion}-`))
+                .reduce((sum, key) => sum + counts[key], 0);
+            statusCountElement.textContent = `Số đơn: ${total}`;
+        } else if (selectedStatus && selectedGeneralTrade) {
+            const total = Object.keys(counts)
+                .filter(key => key.startsWith(`${selectedStatus}-`) && key.endsWith(`-${selectedGeneralTrade}`))
+                .reduce((sum, key) => sum + counts[key], 0);
+            statusCountElement.textContent = `Số đơn: ${total}`;
+        } else if (selectedRegion && selectedGeneralTrade) {
+            const total = Object.keys(counts)
+                .filter(key => key.endsWith(`-${selectedRegion}-${selectedGeneralTrade}`))
+                .reduce((sum, key) => sum + counts[key], 0);
+            statusCountElement.textContent = `Số đơn: ${total}`;
+        } else if (selectedStatus) {
+            const total = Object.keys(counts)
+                .filter(key => key.startsWith(`${selectedStatus}-`))
+                .reduce((sum, key) => sum + counts[key], 0);
+            statusCountElement.textContent = `Số đơn: ${total}`;
+        } else if (selectedRegion) {
+            // Nếu chỉ chọn Khu vực, lọc theo khu vực và tính tổng
+            const total = Object.keys(counts)
+                .filter(key => key.includes(`-${selectedRegion}-`) || key.endsWith(`-${selectedRegion}`))
+                .reduce((sum, key) => sum + counts[key], 0);
+            statusCountElement.textContent = `Số đơn: ${total}`;
+        } else if (selectedGeneralTrade) {
+            const total = Object.keys(counts)
+                .filter(key => key.endsWith(`-${selectedGeneralTrade}`))
+                .reduce((sum, key) => sum + counts[key], 0);
+            statusCountElement.textContent = `Số đơn: ${total}`;
+        } else {
+            const total = filteredData.length;
+            statusCountElement.textContent = `Số đơn: ${total}`;
+        }
+    }
+
+
+
+    async function fetchData() {
+        console.log("Hàm fetchData đang chạy...");
+        const currentRegion = document.getElementById('region-filter').value;
+        const currentGeneralTrade = document.getElementById('generaltrade-filter').value;
+        const currentStatus = document.getElementById('status-filter').value;
+
+        try {
+            const response = await fetch('/data');
+            const result = await response.json();
+
+            if (result.data) {
+                allData = result.data.slice(1).map(row => selectedColumns.map(index => row[index] || ''));
+                updateGeneralTradeFilterOptions(); // Cập nhật bộ lọc Đơn vị phụ trách
+                filterData(); // Hiển thị tất cả dữ liệu ban đầu
+                updateStatusCount(); // Cập nhật tổng số dòng
+
+                // Reapply the filter values
+                document.getElementById('region-filter').value = currentRegion;
+                document.getElementById('generaltrade-filter').value = currentGeneralTrade;
+                document.getElementById('status-filter').value = currentStatus;
+
+                // Optionally, reapply the filtering function if needed
+                filterData(); // Call filterData to apply the filters again
+                updateFilterResults();
+            } else {
+                document.getElementById('data-container').innerHTML = '<p>Không có dữ liệu.</p>';
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            document.getElementById('data-container').innerHTML = '<p>Lỗi khi tải dữ liệu.</p>';
+        }
+    }
+
+    function updateFilterResults() {
+        const selectedStatus = document.getElementById('status-filter').value;
+        const selectedRegion = document.getElementById('region-filter').value;
+        const selectedGeneralTrade = document.getElementById('generaltrade-filter').value;
+
+        // Tạo thông tin kết quả lọc
+        let resultTextRegion = '';
+        if (selectedRegion) {
+            resultTextRegion += `Xưởng sản xuất: ${selectedRegion}`;
+        } else {
+            resultTextRegion += 'Xưởng sản xuất: Tất cả';
+        }
+        // Cập nhật phần tử hiển thị kết quả lọc
+        document.getElementById('filter-results-region').textContent = resultTextRegion;
+
+        let resultTextStatus = '';
+        if (selectedStatus) {
+            resultTextStatus += `Tiến độ: ${selectedStatus}`;
+        } else {
+            resultTextStatus += 'Tiến độ: Tất cả';
+        }
+        // Cập nhật phần tử hiển thị kết quả lọc
+        document.getElementById('filter-results-status').textContent = resultTextStatus;
+
+        let resultTextGeneralTrade = '';
+        if (selectedGeneralTrade) {
+            resultTextGeneralTrade += `Đơn vị phụ trách: ${selectedGeneralTrade}`;
+        } else {
+            resultTextGeneralTrade += 'Đơn vị phụ trách: Tất cả';
+        }
+        // Cập nhật phần tử hiển thị kết quả lọc
+        document.getElementById('filter-results-generaltrade').textContent = resultTextGeneralTrade;
+
+        // Cập nhật số lượng đơn hàng đã lọc
+        updateStatusCount();
+    }
+
+    document.getElementById('status-filter').addEventListener('change', function () {
+        filterData(); // Lọc dữ liệu theo Tiến độ
+        updateStatusCount(); // Cập nhật số dòng theo Tiến độ đã chọn
+        updateFilterResults(); // Cập nhật kết quả lọc
+    });
+
+    document.getElementById('region-filter').addEventListener('change', function () {
+        filterData(); // Lọc dữ liệu theo Khu vực
+        updateStatusCount(); // Cập nhật số dòng theo Khu vực đã chọn
+        updateFilterResults(); // Cập nhật kết quả lọc
+    });
+
+    document.getElementById('generaltrade-filter').addEventListener('change', function () {
+        filterData(); // Lọc dữ liệu theo Khu vực
+        updateStatusCount(); // Cập nhật số dòng theo Khu vực đã chọn
+        updateFilterResults(); // Cập nhật kết quả lọc
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const searchKeyword = this.value; // Lấy từ khóa tìm kiếm
+        filterData(); // Lọc dữ liệu theo Khu vực
+        updateStatusCount(); // Cập nhật số dòng theo Khu vực đã chọn
+        updateFilterResults(); // Cập nhật kết quả lọc
+    });
+
+    function renderData(data, headerRow, searchKeyword = '') {
+        const container = document.getElementById('data-container');
+        container.innerHTML = ''; // Làm sạch nội dung trước khi hiển thị dữ liệu mới
+
+        // Lọc dữ liệu theo từ khóa tìm kiếm
+        const filteredData = data.filter(row => {
+            return row.some(cell => cell.toString().toLowerCase().includes(searchKeyword.toLowerCase()));
+        });
+
+        const table = document.createElement('table');
+
+        // Tạo tiêu đề bảng
+        const header = headerRow.map(cell => `<th>${cell}</th>`).join('');
+        const headerElement = document.createElement('tr');
+        headerElement.innerHTML = header;
+        table.appendChild(headerElement);
+
+        // Nhóm dữ liệu theo Tiến độ (cột 17)
+        const groupedByStatus = filteredData.reduce((groups, row) => {
+            const status = row[17]; // Tiến độ nằm ở cột 17 (chỉ số mảng bắt đầu từ 0)
+            if (!groups[status]) {
+                groups[status] = [];
+            }
+            groups[status].push(row);
+            return groups;
+        }, {});
+
+        // Sắp xếp nhóm Tiến độ (theo số đứng đầu nếu có)
+        const sortedStatusKeys = Object.keys(groupedByStatus).sort((a, b) => {
+            const numA = parseInt(a.split('.')[0]) || 0; // Lấy số đầu tiên, nếu không có thì là 0
+            const numB = parseInt(b.split('.')[0]) || 0;
+            return numA - numB;
+        });
+
+        // Lặp qua từng nhóm Tiến độ đã sắp xếp
+        sortedStatusKeys.forEach(status => {
+            // Thêm dòng tiêu đề Tiến độ
+            const statusRow = document.createElement('tr');
+            statusRow.innerHTML = `<td colspan="${headerRow.length}" class="tiendo" style="background-color: #f0f0f0; color: red;"><b><i class="fas fa-stopwatch"></i> Tiến độ: ${status}</b></td>`;
+            table.appendChild(statusRow);
+
+            // Nhóm dữ liệu trong Tiến độ theo Ngày (cột 0)
+            const groupedByDate = groupedByStatus[status].reduce((groups, row) => {
+                const datePart = row[0]?.split(' ')[0]; // Lấy phần ngày từ "Thời gian tiếp nhận"
+                if (datePart) {
+                    if (!groups[datePart]) {
+                        groups[datePart] = [];
+                    }
+                    groups[datePart].push(row);
+                }
+                return groups;
+            }, {});
+
+            // Sắp xếp nhóm theo Ngày
+            const sortedGroupKeys = Object.keys(groupedByDate).sort((a, b) => {
+                const dateA = new Date(a.split('/').reverse().join('-'));
+                const dateB = new Date(b.split('/').reverse().join('-'));
+                return dateA - dateB;
+            });
+
+            // Lặp qua từng nhóm Ngày trong Tiến độ
+            sortedGroupKeys.forEach(datePart => {
+                // Thêm dòng tiêu đề Ngày
+                const groupRow = document.createElement('tr');
+                groupRow.innerHTML = `<td colspan="${headerRow.length}" style="color: #051F96"><b>Ngày tiếp nhận: ${datePart}</b></td>`;
+                table.appendChild(groupRow);
+
+                // Thêm các dòng dữ liệu trong nhóm Ngày
+                groupedByDate[datePart].forEach(row => {
+                    const rowElement = document.createElement('tr');
+
+                    rowElement.innerHTML = row.map((cell, index) => {
+                        // Nếu cột là "Thời gian tiếp nhận" (cột có chỉ số 0)
+                        if (index === 0) {
+                            if (cell) {
+                                const timePart = cell.split(' ')[1]; // Lấy phần thời gian
+                                return `<td>${timePart || cell}</td>`; // Trả về phần thời gian hoặc giá trị ban đầu
+                            }
+                            return `<td>${cell}</td>`; // Trả về giá trị ban đầu nếu không hợp lệ
+                        }
+                        return `<td>${cell}</td>`; // Nếu không phải cột "Thời gian tiếp nhận"
+                    }).join('');
+
+                    table.appendChild(rowElement);
+                });
+            });
+        });
+
+        container.appendChild(table);
+    }
+
+
+    function filterData() {
+        const selectedStatus = document.getElementById('status-filter').value;
+        const selectedRegion = document.getElementById('region-filter').value;
+        const selectedGeneralTrade = document.getElementById('generaltrade-filter').value;
+        const searchKeyword = document.getElementById('searchInput').value;
+
+        const filteredData = allData.filter(row => {
+            const sets = row[11]; // Cột Tổng số bộ
+            const progress = row[17]; // Cột Tiến độ
+            const region = row[18]; // Cột Khu vực
+            const generalTrade = row[19]; // Cột Đơn vị phụ trách
+            const matchesSets = sets !== '0';
+            const matchesStatus = !selectedStatus || progress === selectedStatus;
+            const matchesRegion = (!selectedRegion || region === selectedRegion) && region !== '';
+            const matchesGeneralTrade = !selectedGeneralTrade || generalTrade === selectedGeneralTrade;
+            const matchesSearch = row.some(cell => cell.toString().toLowerCase().includes(searchKeyword.toLowerCase()));
+
+            return matchesSets && matchesStatus && matchesRegion && matchesGeneralTrade && matchesSearch;
+        });
+
+        renderData(filteredData, selectedColumns.map(index => columnNames[index] || `Cột ${index + 1}`));
+    }
+
+    // Cập nhật lại dữ liệu sau mỗi 30 giây
+    setInterval(fetchData, 30000); // Lặp lại mỗi 30 giây
+
+    fetchData();
+</script>
+
+
+</html>
