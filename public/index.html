@@ -476,6 +476,168 @@
                 animation: blink 3s infinite;
             }
         }
+
+        @media (max-width: 480px) {
+
+            table {
+                max-height: calc(100vh - 150px);
+                margin-bottom: 0;
+                font-size: 8px;
+                line-height: 14px;
+            }
+
+            .filter-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1px;
+            }
+
+            .filter-container select,
+            .filter-container button {
+                width: 100%;
+                font-size: 10px;
+                margin-bottom: 6px;
+                /* Giảm khoảng cách giữa các phần tử */
+            }
+
+            .filter-container button {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            .time-container {
+                font-size: 12px;
+                top: 10px;
+            }
+
+            .search-container {
+                top: 80px;
+                left: 10px;
+                width: 90%;
+                justify-content: left;
+            }
+
+            .search-container {
+                position: fixed;
+                top: 90px;
+                left: 5px;
+                display: flex;
+                align-items: center;
+                transition: all 0.3s ease-in-out;
+                background-color: transparent;
+                padding: 5px;
+                width: 150px;
+                /* Kích thước ban đầu */
+            }
+
+            /* Định nghĩa cho input khi tìm kiếm */
+            #searchInput {
+                left: 5px;
+                width: 0;
+                padding: 5px 10px;
+                border: none;
+                outline: none;
+                font-size: 16px;
+                border-radius: 25px;
+                transition: width 0.1s ease-in-out;
+                opacity: 0;
+            }
+
+            /* Khi input được mở rộng */
+            .search-container.open #searchInput {
+                width: 150px;
+                /* Kích thước khi mở rộng */
+                border: 1px solid #051F96;
+                opacity: 1;
+            }
+
+            /* Biểu tượng kính lúp */
+            .search-icon {
+                font-size: 20px;
+                color: #051F96;
+                cursor: pointer;
+                transition: transform 0.3s ease-in-out;
+                background-color: transparent;
+                /* Nền trong suốt */
+                border: none;
+                /* Không có viền */
+                padding: 5px;
+                /* Thêm khoảng cách xung quanh biểu tượng */
+                border-radius: 50%;
+                /* Đảm bảo biểu tượng có dạng tròn */
+            }
+
+            /* Khi input mở rộng, ẩn biểu tượng kính lúp */
+            .search-container.open .search-icon {
+                transform: scale(0);
+            }
+
+            .title-container {
+                font-size: 14px;
+                font-weight: bold;
+                color: #051F96;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 10px;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .title-container img {
+                width: 35px;
+                /* Đặt chiều rộng của hình ảnh */
+                height: auto;
+                margin-right: 15px;
+                /* Khoảng cách giữa hình ảnh và văn bản */
+            }
+
+            .filter-container div {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .time-container {
+                position: fixed;
+                top: 10px;
+                display: flex;
+                align-items: left;
+                justify-content: left;
+                gap: 10px;
+                font-size: 8px;
+                font-weight: bold;
+                color: red;
+            }
+
+            .clock-icon {
+                font-size: 8px;
+            }
+
+            .filter-results-container {
+                position: fixed;
+                top: 10px;
+                /* Khoảng cách từ mép trên màn hình */
+                right: 10px;
+                /* Cố định ở mép phải màn hình */
+                display: flex;
+                flex-direction: column;
+                /* Xếp các dòng theo chiều dọc */
+                align-items: flex-end;
+                /* Căn chỉnh các phần tử về phía phải */
+                gap: 10px;
+                font-size: 8px;
+                font-weight: bold;
+                color: red;
+                z-index: 1000;
+                /* Đảm bảo phần tử nằm trên các thành phần khác */
+            }
+
+            .tiendo {
+                font-size: 8px;
+                animation: blink 3s infinite;
+            }
+        }
     </style>
     <!-- Thêm Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
