@@ -1079,13 +1079,18 @@
 
         // Lặp qua từng nhóm Tiến độ đã sắp xếp
         sortedStatusKeys.forEach(status => {
-            // Thêm dòng tiêu đề Tiến độ
+            const rowsInStatus = groupedByStatus[status];
+            const rowCount = rowsInStatus.length; // Tổng số hàng của nhóm Tiến độ
+
+            // Thêm dòng tiêu đề Tiến độ với tổng số hàng
             const statusRow = document.createElement('tr');
-            statusRow.innerHTML = `<td colspan="${headerRow.length}" class="tiendo" style="background-color: #f0f0f0; color: red;"><b><i class="fas fa-stopwatch"></i> Tiến độ: ${status}</b></td>`;
+            statusRow.innerHTML = `<td colspan="${headerRow.length}" class="tiendo" style="background-color: #f0f0f0; color: red;">
+            <b><i class="fas fa-stopwatch"></i> Tiến độ: ${status} (${rowCount})</b>
+        </td>`;
             table.appendChild(statusRow);
 
             // Nhóm dữ liệu trong Tiến độ theo Ngày (cột 0)
-            const groupedByDate = groupedByStatus[status].reduce((groups, row) => {
+            const groupedByDate = rowsInStatus.reduce((groups, row) => {
                 const datePart = row[0]?.split(' ')[0]; // Lấy phần ngày từ "Thời gian tiếp nhận"
                 if (datePart) {
                     if (!groups[datePart]) {
@@ -1133,7 +1138,6 @@
 
         container.appendChild(table);
     }
-
 
     function filterData() {
         const selectedStatus = document.getElementById('status-filter').value;
