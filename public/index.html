@@ -886,7 +886,7 @@
             const sets = row[11]; // Cột "Số bộ"
 
             return (
-                sets !== '0' && // Loại bỏ các dòng có "Số bộ" bằng '0'
+                sets !== '0' && progress !== '' && // Loại bỏ các dòng có "Số bộ" bằng '0' và "Tiến độ" bằng ''
                 (!selectedStatus || progress === selectedStatus) &&
                 (!selectedRegion || region === selectedRegion) &&
                 (!selectedGeneralTrade || generalTrade === selectedGeneralTrade)
@@ -895,7 +895,6 @@
 
         // Đếm số lần xuất hiện của từng tổ hợp trạng thái, khu vực và thương mại tổng quát
         filteredData.forEach(row => {
-            const sets = row[11];
             const progress = row[17];
             const region = row[18];
             const generalTrade = row[19];
