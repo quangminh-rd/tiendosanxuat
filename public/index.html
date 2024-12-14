@@ -1148,7 +1148,7 @@
             const region = row[18]; // Cột Khu vực
             const generalTrade = row[19]; // Cột Đơn vị phụ trách
             const matchesSets = sets !== '0';
-            const matchesStatus = !selectedStatus || progress === selectedStatus;
+            const matchesStatus = (!selectedStatus || progress === selectedStatus) && progress !== '';
             const matchesRegion = (!selectedRegion || region === selectedRegion) && region !== '';
             const matchesGeneralTrade = !selectedGeneralTrade || generalTrade === selectedGeneralTrade;
             const matchesSearch = row.some(cell => cell.toString().toLowerCase().includes(searchKeyword.toLowerCase()));
