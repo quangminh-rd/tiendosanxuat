@@ -122,6 +122,11 @@
             display: none;
         }
 
+        table td:last-child,
+        table th:last-child {
+            display: none;
+        }
+
         .time-container {
             position: fixed;
             top: 30px;
@@ -826,7 +831,7 @@
     setInterval(updateCurrentTime, 1000);
 
     let allData = [];
-    const selectedColumns = [67, 72, 1, 66, 4, 13, 17, 0, 60, 63, 74, 25, 84, 77, 81, 82, 83, 78, 76, 5];
+    const selectedColumns = [67, 72, 1, 66, 4, 13, 17, 0, 60, 63, 74, 25, 84, 77, 81, 82, 83, 78, 76, 5, 3];
     const columnNames = {
         67: 'Thời gian tiếp nhận',
         72: 'Hạn giao hàng',
@@ -847,8 +852,34 @@
         83: 'Ngày nhận hàng',
         78: 'Tiến độ',
         76: 'Khu vực',
-        5: 'Đơn vị phụ trách'
+        5: 'Đơn vị phụ trách',
+        3: 'Mã nhân viên',
+        100: 'Quyền xem'
     };
+
+    let showMapping = {}; // Bảng ánh xạ giữa Mã nhân viên (cột E) và show (cột U)
+
+    async function fetchshowMapping() {
+        try {
+            const response = await fetch('/user-data'); // API mới để lấy dữ liệu từ RANGE_USER
+            const result = await response.json();
+
+            if (result.data) {
+                showMapping = result.data.slice(1).reduce((map, row) => {
+                    const employeeCode = row[4]; // Cột E - Mã nhân viên
+                    const show = row[17]; // Cột R - Quyền xem
+                    if (employeeCode && show) {
+                        map[employeeCode] = show;
+                    }
+                    return map;
+                }, {});
+            } else {
+                console.warn('Không có dữ liệu người dùng.');
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
 
     // Hàm để lấy dữ liệu từ cột "Đơn vị phụ trách" và thêm vào bộ lọc
     function updateGeneralTradeFilterOptions() {
@@ -946,20 +977,63 @@
         }
     }
 
-
-
     async function fetchData() {
         console.log("Hàm fetchData đang chạy...");
         const currentRegion = document.getElementById('region-filter').value;
         const currentGeneralTrade = document.getElementById('generaltrade-filter').value;
         const currentStatus = document.getElementById('status-filter').value;
 
+        // Danh sách các chức danh không bị ẩn dữ liệu
+        const allowedRoles = [
+            "Giám đốc kinh doanh",
+            "Phó giám đốc kinh doanh",
+            "TBP",
+            "Kế toán",
+            "IT",
+            "Quản lý sản xuất",
+            "Kế hoạch sản xuất",
+            "Sale admin",
+            "Nhân viên phụ trách NPP",
+            "Nhân viên phụ trách Đại lý",
+            "Nhân viên kinh doanh",
+            "CSKH"
+        ];
+
         try {
             const response = await fetch('/data');
             const result = await response.json();
 
             if (result.data) {
-                allData = result.data.slice(1).map(row => selectedColumns.map(index => row[index] || ''));
+                await fetchshowMapping(); // Lấy show mapping trước khi xử lý dữ liệu
+
+                // Lấy maNhanvienUSER và chucDanhUSER từ server
+                const responseUser = await fetch('/user-info');
+                const { maNhanvienUSER, chucDanhUSER } = await responseUser.json();
+
+                allData = result.data.slice(1).map(row => {
+                    const rowData = selectedColumns.map(index => row[index] || '');
+                    const employeeCode = rowData[20]; // Lấy mã nhân viên (cột 3 trong `selectedColumns`)
+                    const show = showMapping[employeeCode] || ''; // Lấy show từ bảng ánh xạ hoặc để trống
+                    rowData.push(show); // Thêm show vào cuối hàng
+
+                    // Chỉ ẩn dữ liệu nếu quyền xem không chứa maNhanvienUSER và chức danh không nằm trong danh sách cho phép
+                    if (!show.includes(maNhanvienUSER) && !allowedRoles.includes(chucDanhUSER)) {
+                        const tenNguoiLienHeIndex = selectedColumns.indexOf(13); // Index của 'Tên người liên hệ'
+                        const diaChiChiTietIndex = selectedColumns.indexOf(17); // Index của 'Địa chỉ chi tiết'
+                        const luuYIndex = selectedColumns.indexOf(63); // Index của 'Địa chỉ chi tiết'
+
+                        // Ẩn dữ liệu tại 2 cột
+                        rowData[tenNguoiLienHeIndex] = '*****';
+                        rowData[diaChiChiTietIndex] = '*****';
+                        rowData[luuYIndex] = '*****';
+                    }
+
+                    // Remove the last two columns (dynamically)
+                    rowData.splice(-2, 2);
+
+                    return rowData;
+                });
+
                 updateGeneralTradeFilterOptions(); // Cập nhật bộ lọc Đơn vị phụ trách
                 filterData(); // Hiển thị tất cả dữ liệu ban đầu
                 updateStatusCount(); // Cập nhật tổng số dòng

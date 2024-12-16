@@ -28,7 +28,8 @@ async function fetchAllowedEmails() {
 
         const rawData = response.data.values || [];
         if (rawData.length > 1) { // Bỏ qua tiêu đề nếu có
-            ALLOWED_EMAILS = rawData.slice(1).map(row => row[0]); // Lấy danh sách email từ cột U
+            // Lấy giá trị cột U (index 20 - 1 = 19)
+            ALLOWED_EMAILS = rawData.slice(1).map(row => row[20]).filter(email => email); // Loại bỏ giá trị null hoặc undefined
         } else {
             console.warn('Không có email nào trong phạm vi được chỉ định.');
         }
@@ -81,20 +82,47 @@ passport.deserializeUser((user, done) => {
 // Route to authenticate with Google
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// Callback route after authentication
 app.get(
     '/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login.html' }),
-    (req, res) => {
-        if (!ALLOWED_EMAILS.includes(req.user.emails[0].value)) {
-            req.logout(() => {
-                res.redirect('/login.html?error=access_denied');
-            });
-        } else {
+    async (req, res) => {
+        try {
+            const userEmail = req.user.emails[0].value;
+
+            // Gọi API Google Sheets để lấy dữ liệu từ RANGE_USER
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID_USER}/values/${RANGE_USER}?key=${API_KEY}`;
+            const response = await axios.get(url);
+
+            const rawData = response.data.values || [];
+
+            // Tìm dòng có email ở cột U (index 20) khớp với userEmail
+            const matchedRow = rawData.find(row => row[20] === userEmail);
+
+            if (!matchedRow) {
+                // Email không khớp, từ chối truy cập
+                req.logout(() => {
+                    res.redirect('/login.html?error=access_denied');
+                });
+                return;
+            }
+
+            // Lấy dữ liệu từ cột E (index 4) và cột H (index 7) của dòng khớp
+            const maNhanvienUSER = matchedRow[4];
+            const chucDanhUSER = matchedRow[7];
+
+            // Lưu maNhanvienUSER và chucdanhUSER vào session
+            req.session.maNhanvienUSER = maNhanvienUSER;
+            req.session.chucDanhUSER = chucDanhUSER;
+
+            // Chuyển hướng người dùng đến trang index.html
             res.redirect('/index.html');
+        } catch (error) {
+            console.error('Error during Google Sheets fetch:', error.message);
+            res.redirect('/login.html?error=server_error');
         }
     }
 );
+
 
 // Middleware to check authentication
 function isAuthenticated(req, res, next) {
@@ -107,6 +135,35 @@ function isAuthenticated(req, res, next) {
 // Protected route for accessing index.html
 app.get('/index.html', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Route to fetch user data from Google Sheets
+app.get('/user-data', isAuthenticated, async (req, res) => {
+    try {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID_USER}/values/${RANGE_USER}?key=${API_KEY}`;
+        const response = await axios.get(url);
+
+        const rawData = response.data.values || [];
+        if (rawData.length === 0) {
+            return res.status(200).json({ message: 'Không có dữ liệu trong phạm vi được chỉ định.' });
+        }
+
+        // Giữ nguyên dữ liệu người dùng
+        const updatedUserData = rawData;
+
+        // Trả về dữ liệu người dùng
+        res.status(200).json({ data: updatedUserData });
+    } catch (error) {
+        console.error('Error fetching user data from Google Sheets:', error.response ? error.response.data : error.message);
+        res.status(500).json({ error: error.response ? error.response.data : 'Failed to fetch user data from Google Sheets' });
+    }
+});
+
+app.get('/user-info', isAuthenticated, (req, res) => {
+    res.json({
+        maNhanvienUSER: req.session.maNhanvienUSER || null,
+        chucDanhUSER: req.session.chucDanhUSER || null,
+    });
 });
 
 // Protected route for accessing data
