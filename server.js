@@ -55,13 +55,13 @@ app.use(passport.session());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Passport configuration: https://tiendosanxuat.vercel.app
+// Passport configuration: https://kehoachsanxuat.vercel.app
 passport.use(
     new GoogleStrategy(
         {
             clientID: GOOGLE_CLIENT_ID,
             clientSecret: GOOGLE_CLIENT_SECRET,
-            callbackURL: 'https://tiendosanxuat.vercel.app/auth/google/callback',
+            callbackURL: 'https://kehoachsanxuat.vercel.app/auth/google/callback',
         },
         (accessToken, refreshToken, profile, done) => {
             return done(null, profile);
